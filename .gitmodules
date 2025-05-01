@@ -1,0 +1,4 @@
+[submodule "app/src/main/avEngine"]
+	path = app/src/main/avEngine
+	url = https://github.com/OtherMythos/avEngine.git
+	branch = android
