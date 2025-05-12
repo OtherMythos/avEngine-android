@@ -14,7 +14,8 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static', '-DAV_LIBS_DIR=src/main/Dependencies', '-DPLATFORM=android', '-DBUILD_UNIT_TESTS=false', '-DCMAKE_FIND_DEBUG_MODE=OFF' 
+                def ndkDir = project.android.ndkDirectory
+                arguments '-DANDROID_TOOLCHAIN=clang', "-DNDK_LOCATION=$ndkDir", '-DANDROID_STL=c++_static', '-DAV_LIBS_DIR=src/main/Dependencies', '-DPLATFORM=android', '-DBUILD_UNIT_TESTS=false', '-DCMAKE_FIND_DEBUG_MODE=OFF'
                 // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
                 abiFilters 'arm64-v8a'
                 ndkVersion "25.0.8775105"
