@@ -52,6 +52,25 @@ def copySDLFiles(enginePath, depsPath, scriptPath):
 
     print("Copied %s" % str(SDL2JavaPath))
 
+def appendCMakeFlags(extraArgs):
+    if(extraArgs is None):
+        return
+
+    finalArgs = ", ".join(f"'{arg[0]}'" for arg in extraArgs)
+
+    filePath = "app/build.gradle"
+    with open(filePath, "r") as file:
+        lines = file.readlines()
+
+        for i, line in enumerate(lines):
+            if 'arguments' in line:
+                lines[i] = line[:-1] + ", " + finalArgs + "\n"
+                break
+
+    # Write back to the same file
+    with open(filePath, "w") as file:
+        file.writelines(lines)
+
 def main():
     helpText = '''A script to setup the avEngine for android builds.
     Certain files need to be moved into place to allow this android project to be built correctly.
@@ -59,6 +78,7 @@ def main():
 
     parser = argparse.ArgumentParser(description = helpText)
     parser.add_argument("dependencies", type=str, nargs='?', help="Path to the built avEngine dependencies.")
+    parser.add_argument("--extra-args", type=str, action='append', nargs='*', help="Extra CMake/Gradle-style arguments, e.g. -DDEBUG=ON")
     args = parser.parse_args()
 
     if args.dependencies is None:
@@ -70,6 +90,8 @@ def main():
         print("Provided dependencies path %s does not exist or is not useable" % str(depsPath))
         return
 
+    extraArgs = args.extra_args if args.extra_args else None
+
     #Assuming the symlink cloned the engine correctly.
     enginePath = Path("./app/src/main/avEngine").resolve()
     scriptPath = Path(__file__).parent
@@ -78,6 +100,7 @@ def main():
     createAssetsDir(enginePath, depsPath, scriptPath)
     createDependenciesCopy(enginePath, depsPath, scriptPath)
     copySDLFiles(enginePath, depsPath, scriptPath)
+    appendCMakeFlags(extraArgs)
 
 if __name__ == "__main__":
     main()
